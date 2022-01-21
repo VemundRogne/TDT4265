@@ -12,7 +12,16 @@ def pre_process_images(X: np.ndarray):
     """
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
-    # TODO implement this function (Task 2a)
+    
+    assert np.all((0 <= X) & (X <= 255)), "Not all elements in range [0,255]"
+    
+    # Normalize images from range [0, 255] to [-1., 1.]
+    X = (X / (255.0 / 2)) - 1
+
+    # Apply bias trick by appending ones at the end of every row
+    batch_size = X.shape[0]
+    X = np.hstack([X, np.ones(batch_size, 1)])
+
     return X
 
 
