@@ -36,7 +36,12 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
     # TODO implement this function (Task 2a)
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    return 0
+    
+    # Calculate binary cross entropy loss
+    loss_vec = -(outputs * np.log(targets) + (1 - outputs) * np.log(1  targets))
+    loss = np.mean(loss_vec)
+
+    return loss
 
 
 class BinaryModel:

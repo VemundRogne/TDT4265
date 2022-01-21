@@ -12,10 +12,10 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     Returns:
         Cross entropy error (float)
     """
-    # TODO implement this function (Task 3a)
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     raise NotImplementedError
+
 
 
 class SoftmaxModel:
