@@ -20,7 +20,7 @@ def pre_process_images(X: np.ndarray):
 
     # Apply bias trick by appending ones at the end of every row
     batch_size = X.shape[0]
-    X = np.hstack([X, np.ones(batch_size, 1)])
+    X = np.hstack([X, np.ones((batch_size, 1))])
 
     return X
 
@@ -38,7 +38,7 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     
     # Calculate binary cross entropy loss
-    loss_vec = -(outputs * np.log(targets) + (1 - outputs) * np.log(1  targets))
+    loss_vec = -(outputs * np.log(targets) + (1 - outputs) * np.log(1 - targets))
     loss = np.mean(loss_vec)
 
     return loss
