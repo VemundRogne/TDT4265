@@ -54,8 +54,12 @@ class BinaryModel:
         Returns:
             y: output of model with shape [batch size, 1]
         """
-        # TODO implement this function (Task 2a)
-        return None
+        # Apply weights and biases
+        z = X.dot(self.w)
+        # Run through activation function
+        y = 1 / (1 + np.exp(-z))
+        
+        return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
