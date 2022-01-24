@@ -38,8 +38,9 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     
     # Calculate binary cross entropy loss
-    loss_vec = -(outputs * np.log(targets) + (1 - outputs) * np.log(1 - targets))
+    loss_vec = -(targets * np.log(outputs) + (1 - targets) * np.log(1 - outputs))
     loss = np.mean(loss_vec)
+    # loss = np.sum(loss_vec)
 
     return loss
 
@@ -48,7 +49,7 @@ class BinaryModel:
 
     def __init__(self):
         # Define number of input nodes
-        self.I = None
+        self.I = 785
         self.w = np.zeros((self.I, 1))
         self.grad = None
 
@@ -84,7 +85,7 @@ class BinaryModel:
         # _transposed_ gradient
 
         # Assumes Cross entropy loss
-        self.grad = -X.T @ (outputs - targets)
+        self.grad = -X.T @ (targets - outputs)
 
     def zero_grad(self) -> None:
         self.grad = None

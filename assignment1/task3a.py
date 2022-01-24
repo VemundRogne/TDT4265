@@ -14,7 +14,12 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     """
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    raise NotImplementedError
+    # raise NotImplementedError
+
+    loss_vec = -np.sum(targets * np.log(outputs), axis=1) # Sum over classes
+    loss = np.mean(loss_vec)
+
+    return loss
 
 
 
@@ -22,10 +27,10 @@ class SoftmaxModel:
 
     def __init__(self, l2_reg_lambda: float):
         # Define number of input nodes
-        self.I = None
+        self.I = 785
 
         # Define number of output nodes
-        self.num_outputs = None
+        self.num_outputs = 10
         self.w = np.zeros((self.I, self.num_outputs))
         self.grad = None
 
@@ -38,8 +43,12 @@ class SoftmaxModel:
         Returns:
             y: output of model with shape [batch size, num_outputs]
         """
-        # TODO implement this function (Task 3a)
-        return None
+        z = X @ self.w
+        z_exp = np.exp(z)
+        z_exp_sum = np.sum(z_exp, axis=1)[:, np.newaxis] # Sum over number of outputs
+        y = z_exp /  z_exp_sum
+
+        return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
@@ -59,6 +68,12 @@ class SoftmaxModel:
         assert self.grad.shape == self.w.shape,\
              f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
 
+        # Regularization
+        reg_grad = self.l2_reg_lambda * self.w
+
+        self.grad = -X.T @ (targets - outputs) + reg_grad
+
+
     def zero_grad(self) -> None:
         self.grad = None
 
@@ -71,8 +86,14 @@ def one_hot_encode(Y: np.ndarray, num_classes: int):
     Returns:
         Y: shape [Num examples, num classes]
     """
-    # TODO implement this function (Task 3a)
-    raise NotImplementedError
+    n_examples = Y.shape[0]
+    
+    Y_one_hot = np.zeros((n_examples, num_classes))
+
+    for i in range(n_examples):
+        Y_one_hot[i, int(Y[i, 0])] = 1 # Maybe index error?
+
+    return Y_one_hot
 
 
 def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarray):
@@ -123,6 +144,7 @@ if __name__ == "__main__":
     # Simple test for forward pass. Note that this does not cover all errors!
     model = SoftmaxModel(0.0)
     logits = model.forward(X_train)
+    print("logits", logits)
     np.testing.assert_almost_equal(
         logits.mean(), 1/10,
         err_msg="Since the weights are all 0's, the softmax activation should be 1/10")
