@@ -18,8 +18,7 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -
     # TODO Implement this function (Task 2c)
     outputs = model.forward(X)
     y_pred = np.round(outputs) # 1.0 if over 0.5, else 0.0
-
-    accuracy = np.mean(np.abs(y_pred - targets))
+    accuracy = np.mean(1 - np.abs(y_pred - targets))
     return accuracy
 
 
@@ -142,7 +141,10 @@ if __name__ == "__main__":
     )
     train_history_shuffle, val_history_shuffle = trainer.train(num_epochs)
 
-    plt.ylim([0., .2])
+    print("train_history loss len", len(train_history["loss"]))
+    print("train shuffle loss len", len(train_history_shuffle["loss"]))
+
+    # plt.ylim([0., .2])
     utils.plot_loss(train_history["loss"],
                     "Training Loss", npoints_to_average=10)
     utils.plot_loss(
@@ -153,7 +155,7 @@ if __name__ == "__main__":
     plt.savefig("task2e_train_loss_with_shuffle.png")
     plt.show()
 
-    plt.ylim([0.93, .99])
+    # plt.ylim([0.93, .99])
     utils.plot_loss(val_history["accuracy"], "Validation Accuracy")
     utils.plot_loss(
         val_history_shuffle["accuracy"], "Validation Accuracy with shuffle")

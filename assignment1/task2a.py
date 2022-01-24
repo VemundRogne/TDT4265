@@ -85,7 +85,10 @@ class BinaryModel:
         # _transposed_ gradient
 
         # Assumes Cross entropy loss
-        self.grad = -X.T @ (targets - outputs)
+        batch_size = X.shape[0]
+        assert batch_size >= 1, "Batch size smaller than 1 - this will give a " \
+            "divide by zero error!"
+        self.grad = -X.T @ (targets - outputs) * (1 / batch_size)
 
     def zero_grad(self) -> None:
         self.grad = None
