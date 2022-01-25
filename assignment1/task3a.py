@@ -70,8 +70,8 @@ class SoftmaxModel:
 
         # Regularization
         reg_grad = self.l2_reg_lambda * self.w
-
-        self.grad = -X.T @ (targets - outputs) + reg_grad
+        batch_size = X.shape[0]
+        self.grad = -X.T @ (targets - outputs) * (1 / batch_size) + reg_grad
 
 
     def zero_grad(self) -> None:

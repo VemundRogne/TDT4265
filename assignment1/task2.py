@@ -5,6 +5,7 @@ from task2a import cross_entropy_loss, BinaryModel, pre_process_images
 from trainer import BaseTrainer
 np.random.seed(0)
 
+FIGURE_DIRECTORY = "figures/"
 
 def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -> float:
     """
@@ -89,6 +90,10 @@ if __name__ == "__main__":
     X_train = pre_process_images(X_train)
     X_val = pre_process_images(X_val)
 
+    Y_train_copy = Y_train.copy()
+
+    print("y train copy", Y_train_copy[:10])
+
     # ANY PARTS OF THE CODE BELOW THIS CAN BE CHANGED.
 
     # Intialize model
@@ -117,7 +122,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
-    plt.savefig("task2b_binary_train_loss.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2b_binary_train_loss.png")
     plt.show()
 
     # Plot accuracy
@@ -127,7 +132,7 @@ if __name__ == "__main__":
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig("task2b_binary_train_accuracy.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2b_binary_train_accuracy.png")
     plt.show()
 
     # Task 2e - Create a comparison between training with and without shuffling
@@ -152,7 +157,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
-    plt.savefig("task2e_train_loss_with_shuffle.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2e_train_loss_with_shuffle.png")
     plt.show()
 
     # plt.ylim([0.93, .99])
@@ -162,5 +167,15 @@ if __name__ == "__main__":
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig("task2e_train_accuracy_shuffle_difference.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2e_train_accuracy_shuffle_difference.png")
     plt.show()
+
+    # Calculate and plot original label ordering and shuffled label ordering
+    # Y_train_copy = np.array(Y_train_copy)
+    # np.random.shuffle(Y_train_copy) # in-place
+    # Y_cumsum = np.cumsum(Y_train_copy - 0.5)
+    # Y_shuffled_cumsum = np.cumsum(Y_train - 0.5) # Y_train shuffled in-place by LogisticTrainer
+
+    # plt.plot(Y_cumsum)
+    # plt.plot(Y_shuffled_cumsum)
+    # plt.show()

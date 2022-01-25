@@ -73,6 +73,11 @@ class BaseTrainer:
         )
 
         global_step = 0
+
+        use_early_stop = True # Activates or deactivates the early stop criteria
+        best_current_val_loss = float("inf") # For implementing early stopping
+        n_without_val_loss_improvement = 0
+
         for epoch in range(num_epochs):
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
@@ -90,5 +95,19 @@ class BaseTrainer:
 
                     # TODO (Task 2d): Implement early stopping here.
                     # You can access the validation loss in val_history["loss"]
+                    if use_early_stop:
+                        if val_loss < best_current_val_loss:
+                            # Val loss has improved since last time
+                            best_current_val_loss = val_loss
+                            n_without_val_loss_improvement = 0
+                        else:
+                            # Val loss has not improved since last time
+                            n_without_val_loss_improvement += 1
+                            if n_without_val_loss_improvement >= 10:
+                                # Early stop condition fulfilled
+                                print(f"Early stop triggered during epoch {epoch}")
+                                return train_history, val_history 
+
                 global_step += 1
+
         return train_history, val_history
