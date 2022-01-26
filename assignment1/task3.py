@@ -77,6 +77,18 @@ class SoftmaxTrainer(BaseTrainer):
             X_val, Y_val, self.model)
         return loss, accuracy_train, accuracy_val
 
+def plot_weights(models):
+    # Plots the weights of the models and the lambda values
+    n_classes = 10
+
+    for i_model, model in enumerate(models):
+        for i_class in range(n_classes):
+            plt.subplot(i_model, i_class)
+            weight = model.w[:-1, i_class].reshape((28, 28)) # Don't plot bias (last column of weights)
+            plt.imshow(weight, cmap="gray")
+
+    plt.show()
+
 
 if __name__ == "__main__":
     # hyperparameters DO NOT CHANGE IF NOT SPECIFIED IN ASSIGNMENT TEXT
@@ -145,7 +157,10 @@ if __name__ == "__main__":
     # You can finish the rest of task 4 below this point.
 
     # Plotting of softmax weights (Task 4b)
-    #plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
+    models_to_plot = [model, model1]
+    plot_weights(models_to_plot)
+
+    # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
 
     # Plotting of accuracy for difference values of lambdas (task 4c)
     l2_lambdas = [2, .2, .02, .002]
