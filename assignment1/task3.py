@@ -81,7 +81,7 @@ def plot_weights(models):
     # Plots the weights of the models and the lambda values
     n_classes = 10
     n_models = len(models)
-
+    plt.figure()
     for i_model, model in enumerate(models):
         for i_class in range(n_classes):
             plt.subplot(n_models, n_classes, i_class + 1 + n_classes*i_model)
@@ -93,7 +93,6 @@ def plot_weights(models):
 
     fig = plt.gcf()
     fig.set_tight_layout(True)
-    plt.show()
 
 
 if __name__ == "__main__":
@@ -130,7 +129,7 @@ if __name__ == "__main__":
     print("Final Validation accuracy:", calculate_accuracy(X_val, Y_val, model))
 
     # plt.ylim([0.2, .6])
-
+    plt.figure()
     utils.plot_loss(train_history["loss"],
                     "Training Loss", npoints_to_average=10)
     utils.plot_loss(val_history["loss"], "Validation Loss")
@@ -138,8 +137,8 @@ if __name__ == "__main__":
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
     plt.savefig(FIGURE_DIRECTORY + "task3b_softmax_train_loss.png")
-    plt.show()
 
+    plt.figure()
     # Plot accuracy
     plt.ylim([0.89, .93])
     utils.plot_loss(train_history["accuracy"], "Training Accuracy")
