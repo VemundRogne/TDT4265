@@ -77,6 +77,24 @@ class SoftmaxTrainer(BaseTrainer):
             X_val, Y_val, self.model)
         return loss, accuracy_train, accuracy_val
 
+def plot_weights(models):
+    # Plots the weights of the models and the lambda values
+    n_classes = 10
+    n_models = len(models)
+
+    for i_model, model in enumerate(models):
+        for i_class in range(n_classes):
+            plt.subplot(n_models, n_classes, i_class + 1 + n_classes*i_model)
+            weight = model.w[:-1, i_class].reshape((28, 28)) # Don't plot bias (last column of weights)
+            plt.imshow(weight, cmap="gray")
+            ax = plt.gca()
+            ax.axes.xaxis.set_visible(False)
+            ax.axes.yaxis.set_visible(False)
+
+    fig = plt.gcf()
+    fig.set_tight_layout(True)
+    plt.show()
+
 
 if __name__ == "__main__":
     # hyperparameters DO NOT CHANGE IF NOT SPECIFIED IN ASSIGNMENT TEXT
@@ -145,10 +163,21 @@ if __name__ == "__main__":
     # You can finish the rest of task 4 below this point.
 
     # Plotting of softmax weights (Task 4b)
-    #plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
+    models_to_plot = [model, model1]
+    plot_weights(models_to_plot)
+
+    # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
 
     # Plotting of accuracy for difference values of lambdas (task 4c)
     l2_lambdas = [2, .2, .02, .002]
+    models = [SoftmaxModel(l2_reg_lambda=val) for val in l2_lambdas]
+    for _model in models:
+        trainer = SoftmaxTrainer(
+            _model, learning_rate, batch_size, shuffle_dataset,
+            X_train, Y_train, X_val, Y_val,
+        )
+        _ = trainer.train(num_epochs)
+    plot_weights(models)
     plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
 
     # Task 4d - Plotting of the l2 norm for each weight
