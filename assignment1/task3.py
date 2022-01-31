@@ -87,7 +87,12 @@ def plot_weights(models):
             plt.subplot(n_models, n_classes, i_class + 1 + n_classes*i_model)
             weight = model.w[:-1, i_class].reshape((28, 28)) # Don't plot bias (last column of weights)
             plt.imshow(weight, cmap="gray")
+            ax = plt.gca()
+            ax.axes.xaxis.set_visible(False)
+            ax.axes.yaxis.set_visible(False)
 
+    fig = plt.gcf()
+    fig.set_tight_layout(True)
     plt.show()
 
 
