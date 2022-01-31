@@ -1,5 +1,6 @@
 import numpy as np
 import utils
+from rich.progress import track
 
 
 class BaseTrainer:
@@ -78,7 +79,7 @@ class BaseTrainer:
         best_current_val_loss = float("inf") # For implementing early stopping
         n_without_val_loss_improvement = 0
 
-        for epoch in range(num_epochs):
+        for epoch in track(range(num_epochs), description="Training..."):
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
             for X_batch, Y_batch in iter(train_loader):
