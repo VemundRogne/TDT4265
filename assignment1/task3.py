@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from task2a import pre_process_images
 from trainer import BaseTrainer
 from task3a import cross_entropy_loss, SoftmaxModel, one_hot_encode
+from numpy import linalg as LA
 np.random.seed(0)
 
 FIGURE_DIRECTORY = "figures/"
@@ -188,7 +189,11 @@ if __name__ == "__main__":
     #plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
 
     # Task 4d - Plotting of the l2 norm for each weight
+    plt.figure()
+    norms = [LA.norm(_model.w) for _model in l2_models]
+    plt.plot([str(val) for val in l2_lambdas], norms)
 
-    plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
+
+#    plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
 
     plt.show()
