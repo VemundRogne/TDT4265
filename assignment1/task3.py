@@ -148,38 +148,48 @@ if __name__ == "__main__":
     plt.ylabel("Accuracy")
     plt.legend()
     plt.savefig(FIGURE_DIRECTORY + "task3b_softmax_train_accuracy.png")
-    plt.show()
 
     # Train a model with L2 regularization (task 4b)
-
-
-
     model1 = SoftmaxModel(l2_reg_lambda=2.0)
     trainer = SoftmaxTrainer(
         model1, learning_rate, batch_size, shuffle_dataset,
         X_train, Y_train, X_val, Y_val,
     )
     train_history_reg01, val_history_reg01 = trainer.train(num_epochs)
-    # You can finish the rest of task 4 below this point.
 
     # Plotting of softmax weights (Task 4b)
     models_to_plot = [model, model1]
     plot_weights(models_to_plot)
-
     # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
 
-    # Plotting of accuracy for difference values of lambdas (task 4c)
+    # Training models with different L2 regularizations (task4c)
     l2_lambdas = [2, .2, .02, .002]
-    models = [SoftmaxModel(l2_reg_lambda=val) for val in l2_lambdas]
-    for _model in models:
+    l2_models = [SoftmaxModel(l2_reg_lambda=val) for val in l2_lambdas]
+    l2_train_histories = []
+    l2_val_histories = []
+    for _model in l2_models:
         trainer = SoftmaxTrainer(
             _model, learning_rate, batch_size, shuffle_dataset,
             X_train, Y_train, X_val, Y_val,
         )
-        _ = trainer.train(num_epochs)
-    plot_weights(models)
-    plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
+        _train_history, _val_history = trainer.train(num_epochs)
+        l2_train_histories.append(_train_history)
+        l2_val_histories.append(_val_history)
+    
+    # Plot softmax weghts:
+    plot_weights(l2_models)
+
+    plt.figure()
+    # Plot validation accuracies
+    for i in range(len(l2_models)):
+        utils.plot_loss(l2_val_histories[i]['accuracy'], f"Validation Accuracy: lambda={l2_lambdas[i]}")
+        plt.xlabel("Number of training steps")
+        plt.ylabel("Accuracy")
+    plt.legend()
+    #plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
 
     # Task 4d - Plotting of the l2 norm for each weight
 
     plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
+
+    plt.show()
