@@ -80,10 +80,11 @@ class SoftmaxTrainer(BaseTrainer):
 def plot_weights(models):
     # Plots the weights of the models and the lambda values
     n_classes = 10
+    n_models = len(models)
 
     for i_model, model in enumerate(models):
         for i_class in range(n_classes):
-            plt.subplot(i_model, i_class)
+            plt.subplot(n_models, n_classes, i_class + 1 + n_classes*i_model)
             weight = model.w[:-1, i_class].reshape((28, 28)) # Don't plot bias (last column of weights)
             plt.imshow(weight, cmap="gray")
 
