@@ -83,21 +83,6 @@ class SoftmaxTrainer(BaseTrainer):
 def plot_weights(models, show=True, save_path="figures/task"):
     # Plots the weights of the models and the lambda values
     n_classes = 10
-<<<<<<< HEAD
-    n_models = len(models)
-    plt.figure()
-    for i_model, model in enumerate(models):
-        for i_class in range(n_classes):
-            plt.subplot(n_models, n_classes, i_class + 1 + n_classes*i_model)
-            weight = model.w[:-1, i_class].reshape((28, 28)) # Don't plot bias (last column of weights)
-            plt.imshow(weight, cmap="gray")
-            ax = plt.gca()
-            ax.axes.xaxis.set_visible(False)
-            ax.axes.yaxis.set_visible(False)
-
-    fig = plt.gcf()
-    fig.set_tight_layout(True)
-=======
 
     n_cols = n_classes
     n_rows = len(models)
@@ -122,7 +107,6 @@ def plot_weights(models, show=True, save_path="figures/task"):
 
     if save_path:
         fig.savefig(save_path, bbox_inches="tight")
->>>>>>> 8758046 (Add many changes :))
 
 
 if __name__ == "__main__":
@@ -189,52 +173,14 @@ if __name__ == "__main__":
 
     # Plotting of softmax weights (Task 4b)
     models_to_plot = [model, model1]
-<<<<<<< HEAD
-    plot_weights(models_to_plot)
-=======
     # plot_weights(models_to_plot, save_path=FIGURE_DIRECTORY+"task4b_softmax_weight.png")
 
->>>>>>> 8758046 (Add many changes :))
     # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
     """
 
+
     # Training models with different L2 regularizations (task4c)
     l2_lambdas = [2, .2, .02, .002]
-<<<<<<< HEAD
-    l2_models = [SoftmaxModel(l2_reg_lambda=val) for val in l2_lambdas]
-    l2_train_histories = []
-    l2_val_histories = []
-    for _model in l2_models:
-        trainer = SoftmaxTrainer(
-            _model, learning_rate, batch_size, shuffle_dataset,
-            X_train, Y_train, X_val, Y_val,
-        )
-        _train_history, _val_history = trainer.train(num_epochs)
-        l2_train_histories.append(_train_history)
-        l2_val_histories.append(_val_history)
-    
-    # Plot softmax weghts:
-    plot_weights(l2_models)
-
-    plt.figure()
-    # Plot validation accuracies
-    for i in range(len(l2_models)):
-        utils.plot_loss(l2_val_histories[i]['accuracy'], f"Validation Accuracy: lambda={l2_lambdas[i]}")
-        plt.xlabel("Number of training steps")
-        plt.ylabel("Accuracy")
-    plt.legend()
-    #plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
-
-    # Task 4d - Plotting of the l2 norm for each weight
-    plt.figure()
-    norms = [LA.norm(_model.w) for _model in l2_models]
-    plt.plot([str(val) for val in l2_lambdas], norms)
-
-
-#    plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
-
-    plt.show()
-=======
 
     training_results = []
 
@@ -256,7 +202,7 @@ if __name__ == "__main__":
             "val_history": val_history,
             "weight_norm": weight_norm
         })
-
+    plt.figure()
     # Plot validation accuracy for different regularization parameters
     for result in training_results:
         val_history = result["val_history"]
@@ -269,16 +215,15 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Validation accuracy")
-    plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
-    plt.show()
+#    plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
 
     weight_norms = [res["weight_norm"] for res in training_results]
-
+    plt.figure()
     plt.plot(l2_lambdas, weight_norms)
     plt.ylim(0, 2.5)
     plt.xlabel("Regularization parameter lambda")
     plt.ylabel("L2 norm of weights")
-    plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
+    #plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
     plt.show()
     # plt.savefig(FIGURE_DIRECTORY + "task3b_softmax_train_loss.png")
     # # Task 4e - Plotting of the l2 norm for each weight
@@ -293,4 +238,3 @@ if __name__ == "__main__":
     # plt.ylabel("Cross Entropy Loss - Average")
     # plt.show()
     # # plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
->>>>>>> 8758046 (Add many changes :))
