@@ -169,13 +169,3 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig(FIGURE_DIRECTORY + "task2e_train_accuracy_shuffle_difference.png")
     plt.show()
-
-    # Calculate and plot original label ordering and shuffled label ordering
-    # Y_train_copy = np.array(Y_train_copy)
-    # np.random.shuffle(Y_train_copy) # in-place
-    # Y_cumsum = np.cumsum(Y_train_copy - 0.5)
-    # Y_shuffled_cumsum = np.cumsum(Y_train - 0.5) # Y_train shuffled in-place by LogisticTrainer
-
-    # plt.plot(Y_cumsum)
-    # plt.plot(Y_shuffled_cumsum)
-    # plt.show()

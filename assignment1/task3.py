@@ -124,7 +124,6 @@ if __name__ == "__main__":
     Y_train = one_hot_encode(Y_train, 10)
     Y_val = one_hot_encode(Y_val, 10)
 
-    """
     # ANY PARTS OF THE CODE BELOW THIS CAN BE CHANGED.
 
     # Intialize model
@@ -176,7 +175,6 @@ if __name__ == "__main__":
     # plot_weights(models_to_plot, save_path=FIGURE_DIRECTORY+"task4b_softmax_weight.png")
 
     # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
-    """
 
 
     # Training models with different L2 regularizations (task4c)
@@ -202,8 +200,9 @@ if __name__ == "__main__":
             "val_history": val_history,
             "weight_norm": weight_norm
         })
+    
+    # Train and plot validation accuracy for different regularization parameters
     plt.figure()
-    # Plot validation accuracy for different regularization parameters
     for result in training_results:
         val_history = result["val_history"]
         l2_lambda = result["l2_lambda"]
@@ -215,7 +214,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Validation accuracy")
-#    plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
+    # plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
 
     weight_norms = [res["weight_norm"] for res in training_results]
     plt.figure()
@@ -225,16 +224,3 @@ if __name__ == "__main__":
     plt.ylabel("L2 norm of weights")
     #plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
     plt.show()
-    # plt.savefig(FIGURE_DIRECTORY + "task3b_softmax_train_loss.png")
-    # # Task 4e - Plotting of the l2 norm for each weight
-    # for result in training_results:
-    #     l2_lambda = result["l2_lambda"]
-
-    #     model = result["model"]
-    #     weight_norm = np.linalg.norm(model.w, ord=2) # Euclidean norm
-
-    # plt.legend()
-    # plt.xlabel("Number of Training Steps")
-    # plt.ylabel("Cross Entropy Loss - Average")
-    # plt.show()
-    # # plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
