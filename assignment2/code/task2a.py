@@ -52,7 +52,7 @@ class SoftmaxModel:
         # Always reset random seed before weight init to get comparable results.
         np.random.seed(1)
         # Define number of input nodes
-        self.I = None
+        self.I = 785 # None
         self.use_improved_sigmoid = use_improved_sigmoid
 
         # Define number of output nodes
@@ -81,7 +81,26 @@ class SoftmaxModel:
         # TODO implement this function (Task 2b)
         # HINT: For performing the backward pass, you can save intermediate activations in variables in the forward pass.
         # such as self.hidden_layer_output = ...
-        return None
+
+        self.hidden_layer_output = []        
+        
+        # Set input X as mock activation
+        prev_activations = X
+
+        # Iterate over weights per layer
+        for layer_w in self.ws:
+            # Apply weights
+            z = prev_activations @ layer_w
+            # Apply sigmoid
+            activations = 1 / (1 + np.exp(-z))
+
+            # Save hidden layer activation, this will save all layers including output layer
+            self.hidden_layer_output.append(activations)
+            prev_activations = activations
+            
+        y = activations # Activations of last layer
+
+        return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray,
                  targets: np.ndarray) -> None:
@@ -167,7 +186,8 @@ if __name__ == "__main__":
         f"Expected the vector to be [0,0,0,1,0,0,0,0,0,0], but got {Y}"
 
     X_train, Y_train, *_ = utils.load_full_mnist()
-    X_train = pre_process_images(X_train)
+    mean, std = utils.calc_mean_std(X_train)
+    X_train = pre_process_images(X_train, mean=mean, std=std) # Edited from given code
     Y_train = one_hot_encode(Y_train, 10)
     assert X_train.shape[1] == 785,\
         f"Expected X_train to have 785 elements per image. Shape was: {X_train.shape}"
