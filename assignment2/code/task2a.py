@@ -4,7 +4,7 @@ import typing
 np.random.seed(1)
 
 
-def pre_process_images(X: np.ndarray):
+def pre_process_images(X: np.ndarray, mean=None, std=None):
     """
     Args:
         X: images of shape [batch size, 784] in the range (0, 255)
@@ -13,8 +13,16 @@ def pre_process_images(X: np.ndarray):
     """
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
-    # TODO implement this function (Task 2a)
-    return X
+
+    assert mean is not None and std is not None, \
+        "Mean and std to normalize with should be given as argument!"
+    
+    X_normalized = (X - mean) / std
+    
+    batch_size = X_normalized.shape[0]
+    X_preprocessed = np.hstack([X_normalized, np.ones((batch_size, 1))])
+
+    return X_preprocessed
 
 
 def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):

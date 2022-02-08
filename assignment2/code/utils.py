@@ -42,6 +42,18 @@ def batch_loader(
         yield (x, y)
 
 
+def calc_mean_std(X):
+    """
+    Args:
+        X: images of shape [batch size, 784] - but dimensions do not really matter here
+    Returns:
+        Scalar mean and std of dataset (float)
+    """
+    mean = np.mean(X) # Computes mean of flattened array by default
+    std = np.std(X)
+    return mean, std
+
+
 ### NO NEED TO EDIT ANY CODE BELOW THIS ###
 
 

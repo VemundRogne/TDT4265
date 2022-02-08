@@ -93,8 +93,12 @@ if __name__ == "__main__":
 
     # Load dataset
     X_train, Y_train, X_val, Y_val = utils.load_full_mnist()
-    X_train = pre_process_images(X_train)
-    X_val = pre_process_images(X_val)
+
+    # Calc mean and std
+    mean, std = utils.calc_mean_std(X_train) # Only looking at training set when calculating mean, std
+
+    X_train = pre_process_images(X_train, mean=mean, std=std)
+    X_val  = pre_process_images(X_val, mean=mean, std=std) # Make sure we use the same mean and std values
     Y_train = one_hot_encode(Y_train, 10)
     Y_val = one_hot_encode(Y_val, 10)
     # Hyperparameters
