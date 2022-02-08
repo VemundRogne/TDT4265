@@ -176,7 +176,6 @@ if __name__ == "__main__":
 
     # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
 
-
     # Training models with different L2 regularizations (task4c)
     l2_lambdas = [2, .2, .02, .002]
 
@@ -200,7 +199,7 @@ if __name__ == "__main__":
             "val_history": val_history,
             "weight_norm": weight_norm
         })
-    
+
     # Train and plot validation accuracy for different regularization parameters
     plt.figure()
     for result in training_results:

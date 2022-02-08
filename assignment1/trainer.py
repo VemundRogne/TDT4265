@@ -2,6 +2,7 @@ import numpy as np
 import utils
 import tqdm
 
+
 class BaseTrainer:
 
     def __init__(
@@ -74,8 +75,8 @@ class BaseTrainer:
 
         global_step = 0
 
-        use_early_stop = True # Activates or deactivates the early stop criteria
-        best_current_val_loss = float("inf") # For implementing early stopping
+        use_early_stop = True  # Activates or deactivates the early stop criteria
+        best_current_val_loss = float("inf")  # For implementing early stopping
         n_without_val_loss_improvement = 0
 
         for epoch in tqdm.tqdm(range(num_epochs)):
@@ -105,8 +106,9 @@ class BaseTrainer:
                             n_without_val_loss_improvement += 1
                             if n_without_val_loss_improvement >= 10:
                                 # Early stop condition fulfilled
-                                print(f"Early stop triggered during epoch {epoch}")
-                                return train_history, val_history 
+                                print(
+                                    f"Early stop triggered during epoch {epoch}")
+                                return train_history, val_history
 
                 global_step += 1
 

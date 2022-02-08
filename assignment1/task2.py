@@ -7,6 +7,7 @@ np.random.seed(0)
 
 FIGURE_DIRECTORY = "figures/"
 
+
 def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -> float:
     """
     Args:
@@ -18,7 +19,7 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -
     """
     # TODO Implement this function (Task 2c)
     outputs = model.forward(X)
-    y_pred = np.round(outputs) # 1.0 if over 0.5, else 0.0
+    y_pred = np.round(outputs)  # 1.0 if over 0.5, else 0.0
     accuracy = np.mean(1 - np.abs(y_pred - targets))
     return accuracy
 
@@ -40,13 +41,12 @@ class LogisticTrainer(BaseTrainer):
         # TODO: Implement this function (task 2b)
         outputs = self.model.forward(X_batch)
 
-
         # Calculate gradient
-        self.model.zero_grad() # reset gradient
+        self.model.zero_grad()  # reset gradient
         self.model.backward(X_batch, outputs, Y_batch)
 
         # Take gradient descent step
-        self.model.w -= self.learning_rate * self.model.grad # or += ?
+        self.model.w -= self.learning_rate * self.model.grad  # or += ?
 
         # Calculate loss
         loss = cross_entropy_loss(Y_batch, outputs)
@@ -167,5 +167,6 @@ if __name__ == "__main__":
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig(FIGURE_DIRECTORY + "task2e_train_accuracy_shuffle_difference.png")
+    plt.savefig(FIGURE_DIRECTORY +
+                "task2e_train_accuracy_shuffle_difference.png")
     plt.show()
