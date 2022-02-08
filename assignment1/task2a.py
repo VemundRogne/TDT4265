@@ -12,9 +12,9 @@ def pre_process_images(X: np.ndarray):
     """
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
-    
+
     assert np.all((0 <= X) & (X <= 255)), "Not all elements in range [0,255]"
-    
+
     # Normalize images from range [0, 255] to [-1., 1.]
     X = (X / (255.0 / 2)) - 1
 
@@ -36,9 +36,10 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
     # TODO implement this function (Task 2a)
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    
+
     # Calculate binary cross entropy loss
-    loss_vec = -(targets * np.log(outputs) + (1 - targets) * np.log(1 - outputs))
+    loss_vec = -(targets * np.log(outputs) +
+                 (1 - targets) * np.log(1 - outputs))
     loss = np.mean(loss_vec)
     # loss = np.sum(loss_vec)
 
@@ -64,7 +65,7 @@ class BinaryModel:
         z = X.dot(self.w)
         # Run through activation function
         y = 1 / (1 + np.exp(-z))
-        
+
         return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
@@ -80,7 +81,7 @@ class BinaryModel:
         self.grad = np.zeros_like(self.w)
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
-        
+
         # Note that we are to find a column vector - so we actually find the
         # _transposed_ gradient
 
@@ -99,7 +100,8 @@ def gradient_approximation_test(model: BinaryModel, X: np.ndarray, Y: np.ndarray
         Numerical approximation for gradients. Should not be edited. 
         Details about this test is given in the appendix in the assignment.
     """
-    w_orig = np.random.normal(loc=0, scale=1/model.w.shape[0]**2, size=model.w.shape)
+    w_orig = np.random.normal(
+        loc=0, scale=1/model.w.shape[0]**2, size=model.w.shape)
     epsilon = 1e-3
     for i in range(w_orig.shape[0]):
         model.w = w_orig.copy()
@@ -127,8 +129,10 @@ if __name__ == "__main__":
     category1, category2 = 2, 3
     X_train, Y_train, *_ = utils.load_binary_dataset(category1, category2)
     X_train = pre_process_images(X_train)
-    assert X_train.max() <= 1.0, f"The images (X_train) should be normalized to the range [-1, 1]"
-    assert X_train.min() < 0 and X_train.min() >= -1, f"The images (X_train) should be normalized to the range [-1, 1]"
+    assert X_train.max(
+    ) <= 1.0, f"The images (X_train) should be normalized to the range [-1, 1]"
+    assert X_train.min() < 0 and X_train.min() >= - \
+        1, f"The images (X_train) should be normalized to the range [-1, 1]"
     assert X_train.shape[1] == 785,\
         f"Expected X_train to have 785 elements per image. Shape was: {X_train.shape}"
 

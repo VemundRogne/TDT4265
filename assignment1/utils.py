@@ -26,7 +26,8 @@ def batch_loader(
     indices = list(range(len(X)))
 
     if shuffle:
-        # Create permutation indexes, so we make sure we shuffle X and Y the same way
+        # Create permutation indexes, so we make sure we shuffle X and Y using the same
+        # permutation
         dataset_length = X.shape[0]
         permutation = np.random.permutation(dataset_length) 
         X = X[permutation,:]

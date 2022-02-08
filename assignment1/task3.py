@@ -1,4 +1,3 @@
-from assignment1.task2 import FIGURE_DIRECTORY
 import numpy as np
 import utils
 import matplotlib.pyplot as plt
@@ -9,6 +8,7 @@ from numpy import linalg as LA
 np.random.seed(0)
 
 FIGURE_DIRECTORY = "figures/"
+
 
 def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) -> float:
     """
@@ -23,8 +23,9 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) 
     y_pred = np.argmax(outputs, axis=1)
     y_true = np.argmax(targets, axis=1)
 
-    accuracy = np.mean((np.isclose(y_pred, y_true)).astype(int)) # Convert bool to int so accuracy can be summed
-    
+    # Convert bool to int so accuracy can be summed
+    accuracy = np.mean((np.isclose(y_pred, y_true)).astype(int))
+
     return accuracy
 
 
@@ -45,11 +46,11 @@ class SoftmaxTrainer(BaseTrainer):
         outputs = self.model.forward(X_batch)
 
         # Calculate and do gradient step
-        self.model.zero_grad() # reset gradient
+        self.model.zero_grad()  # reset gradient
         self.model.backward(X_batch, outputs, Y_batch)
 
         # Take gradient descent step
-        self.model.w -= self.learning_rate * self.model.grad 
+        self.model.w -= self.learning_rate * self.model.grad
 
         # Calculate loss
         loss = cross_entropy_loss(Y_batch, outputs)
@@ -78,22 +79,34 @@ class SoftmaxTrainer(BaseTrainer):
             X_val, Y_val, self.model)
         return loss, accuracy_train, accuracy_val
 
-def plot_weights(models):
+
+def plot_weights(models, show=True, save_path="figures/task"):
     # Plots the weights of the models and the lambda values
     n_classes = 10
-    n_models = len(models)
-    plt.figure()
+
+    n_cols = n_classes
+    n_rows = len(models)
+
+    fig, axs = plt.subplots(n_rows, n_cols, figsize=(8, 4))
+
+    # Plot the weights
     for i_model, model in enumerate(models):
         for i_class in range(n_classes):
-            plt.subplot(n_models, n_classes, i_class + 1 + n_classes*i_model)
-            weight = model.w[:-1, i_class].reshape((28, 28)) # Don't plot bias (last column of weights)
-            plt.imshow(weight, cmap="gray")
-            ax = plt.gca()
-            ax.axes.xaxis.set_visible(False)
-            ax.axes.yaxis.set_visible(False)
+            # Don't plot bias (last column of weights)
+            weight = model.w[:-1, i_class].reshape((28, 28))
+            ax = axs[i_model, i_class]
+            ax.imshow(weight, cmap="gray")
+            ax.set_axis_off()
+        # axs[i_model, 0].set_xlabel(f"lambda = {model.l2_reg_lambda}")
 
-    fig = plt.gcf()
-    fig.set_tight_layout(True)
+    plt.subplots_adjust(wspace=0, hspace=0)
+
+    if show:
+        fig.show()
+        # input("Press <enter> to continue")
+
+    if save_path:
+        fig.savefig(save_path, bbox_inches="tight")
 
 
 if __name__ == "__main__":
@@ -159,41 +172,54 @@ if __name__ == "__main__":
 
     # Plotting of softmax weights (Task 4b)
     models_to_plot = [model, model1]
-    plot_weights(models_to_plot)
+    # plot_weights(models_to_plot, save_path=FIGURE_DIRECTORY+"task4b_softmax_weight.png")
+
     # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
 
     # Training models with different L2 regularizations (task4c)
     l2_lambdas = [2, .2, .02, .002]
-    l2_models = [SoftmaxModel(l2_reg_lambda=val) for val in l2_lambdas]
-    l2_train_histories = []
-    l2_val_histories = []
-    for _model in l2_models:
+
+    training_results = []
+
+    for i, l2_lambda in enumerate(l2_lambdas):
+        # Initialize model
+        model = SoftmaxModel(l2_lambda)
+        # Train model
         trainer = SoftmaxTrainer(
-            _model, learning_rate, batch_size, shuffle_dataset,
+            model, learning_rate, batch_size, shuffle_dataset,
             X_train, Y_train, X_val, Y_val,
         )
-        _train_history, _val_history = trainer.train(num_epochs)
-        l2_train_histories.append(_train_history)
-        l2_val_histories.append(_val_history)
-    
-    # Plot softmax weghts:
-    plot_weights(l2_models)
+        train_history, val_history = trainer.train(num_epochs)
 
+        weight_norm = np.linalg.norm(model.w, ord=2)
+
+        training_results.append({
+            "model": model,
+            "l2_lambda": l2_lambda,
+            "val_history": val_history,
+            "weight_norm": weight_norm
+        })
+
+    # Train and plot validation accuracy for different regularization parameters
     plt.figure()
-    # Plot validation accuracies
-    for i in range(len(l2_models)):
-        utils.plot_loss(l2_val_histories[i]['accuracy'], f"Validation Accuracy: lambda={l2_lambdas[i]}")
-        plt.xlabel("Number of training steps")
-        plt.ylabel("Accuracy")
+    for result in training_results:
+        val_history = result["val_history"]
+        l2_lambda = result["l2_lambda"]
+
+        utils.plot_loss(val_history["accuracy"],
+                        f"lambda={l2_lambda}")
+
+    plt.ylim([.73, .93])
     plt.legend()
-    #plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
+    plt.xlabel("Number of Training Steps")
+    plt.ylabel("Validation accuracy")
+    # plt.savefig(FIGURE_DIRECTORY + "task4c_l2_reg_accuracy.png")
 
-    # Task 4d - Plotting of the l2 norm for each weight
+    weight_norms = [res["weight_norm"] for res in training_results]
     plt.figure()
-    norms = [LA.norm(_model.w) for _model in l2_models]
-    plt.plot([str(val) for val in l2_lambdas], norms)
-
-
-#    plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
-
+    plt.plot(l2_lambdas, weight_norms)
+    plt.ylim(0, 2.5)
+    plt.xlabel("Regularization parameter lambda")
+    plt.ylabel("L2 norm of weights")
+    #plt.savefig(FIGURE_DIRECTORY + "task4d_l2_reg_norms.png")
     plt.show()

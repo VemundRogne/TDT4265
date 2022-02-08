@@ -1,6 +1,6 @@
 import numpy as np
 import utils
-from rich.progress import track
+import tqdm
 
 
 class BaseTrainer:
@@ -75,11 +75,11 @@ class BaseTrainer:
 
         global_step = 0
 
-        use_early_stop = True # Activates or deactivates the early stop criteria
-        best_current_val_loss = float("inf") # For implementing early stopping
+        use_early_stop = True  # Activates or deactivates the early stop criteria
+        best_current_val_loss = float("inf")  # For implementing early stopping
         n_without_val_loss_improvement = 0
 
-        for epoch in track(range(num_epochs), description="Training..."):
+        for epoch in tqdm.tqdm(range(num_epochs)):
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
             for X_batch, Y_batch in iter(train_loader):
@@ -106,8 +106,9 @@ class BaseTrainer:
                             n_without_val_loss_improvement += 1
                             if n_without_val_loss_improvement >= 10:
                                 # Early stop condition fulfilled
-                                print(f"Early stop triggered during epoch {epoch}")
-                                return train_history, val_history 
+                                print(
+                                    f"Early stop triggered during epoch {epoch}")
+                                return train_history, val_history
 
                 global_step += 1
 

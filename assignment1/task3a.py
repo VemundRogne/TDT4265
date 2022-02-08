@@ -16,11 +16,10 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     # raise NotImplementedError
 
-    loss_vec = -np.sum(targets * np.log(outputs), axis=1) # Sum over classes
+    loss_vec = -np.sum(targets * np.log(outputs), axis=1)  # Sum over classes
     loss = np.mean(loss_vec)
 
     return loss
-
 
 
 class SoftmaxModel:
@@ -45,8 +44,9 @@ class SoftmaxModel:
         """
         z = X @ self.w
         z_exp = np.exp(z)
-        z_exp_sum = np.sum(z_exp, axis=1)[:, np.newaxis] # Sum over number of outputs
-        y = z_exp /  z_exp_sum
+        # Sum over number of outputs
+        z_exp_sum = np.sum(z_exp, axis=1)[:, np.newaxis]
+        y = z_exp / z_exp_sum
 
         return y
 
@@ -60,19 +60,18 @@ class SoftmaxModel:
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
         # TODO implement this function (Task 3a)
-        # To implement L2 regularization task (4b) you can get the lambda value in self.l2_reg_lambda 
+        # To implement L2 regularization task (4b) you can get the lambda value in self.l2_reg_lambda
         # which is defined in the constructor.
         assert targets.shape == outputs.shape,\
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
         self.grad = np.zeros_like(self.w)
         assert self.grad.shape == self.w.shape,\
-             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
+            f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
 
         # Regularization
         reg_grad = self.l2_reg_lambda * self.w
         batch_size = X.shape[0]
         self.grad = -X.T @ (targets - outputs) * (1 / batch_size) + reg_grad
-
 
     def zero_grad(self) -> None:
         self.grad = None
@@ -87,11 +86,11 @@ def one_hot_encode(Y: np.ndarray, num_classes: int):
         Y: shape [Num examples, num classes]
     """
     n_examples = Y.shape[0]
-    
+
     Y_one_hot = np.zeros((n_examples, num_classes))
 
     for i in range(n_examples):
-        Y_one_hot[i, int(Y[i, 0])] = 1 # Maybe index error?
+        Y_one_hot[i, int(Y[i, 0])] = 1  # Maybe index error?
 
     return Y_one_hot
 
@@ -101,7 +100,8 @@ def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarra
         Numerical approximation for gradients. Should not be edited. 
         Details about this test is given in the appendix in the assignment.
     """
-    w_orig = np.random.normal(loc=0, scale=1/model.w.shape[0]**2, size=model.w.shape)
+    w_orig = np.random.normal(
+        loc=0, scale=1/model.w.shape[0]**2, size=model.w.shape)
 
     epsilon = 1e-3
     for i in range(model.w.shape[0]):
