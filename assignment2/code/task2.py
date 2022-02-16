@@ -15,8 +15,9 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) 
     Returns:
         Accuracy (float)
     """
-    # TODO: Implement this function (copy from last assignment)
-    accuracy = 0
+    outputs = model.forward(X)
+    y_pred = np.round(outputs)  # 1.0 if over 0.5, else 0.0
+    accuracy = np.mean(1 - np.abs(y_pred - targets))
     return accuracy
 
 
@@ -46,11 +47,28 @@ class SoftmaxTrainer(BaseTrainer):
         Returns:
             loss value (float) on batch
         """
-        # TODO: Implement this function (task 2c)
+        outputs = self.model.forward(X_batch)
 
-        loss = 0
+        # Calculate gradient
+        if self.use_momentum:
+            # Save previous grads so we may use it to calculate momentum
+            for i, grad in enumerate(self.model.grads):
+                self.previous_grads[i] = grad.copy()
 
-        loss = cross_entropy_loss(Y_batch, logits)  # sol
+        self.model.zero_grad()  # reset gradient (but not hidden layer outputs)
+        self.model.backward(X_batch, outputs, Y_batch)
+
+        # Take gradient descent step in each network layer
+        for i in range(len(self.model.ws)):
+            if self.use_momentum:
+                momentum = self.momentum_gamma * self.previous_grads[i]
+                self.model.ws[i] -= self.learning_rate * (self.model.grads[i] - momentum)
+            else:
+                # Don't use momentum
+                self.model.ws[i] -= self.learning_rate * self.model.grads[i]
+
+        # Calculate loss
+        loss = cross_entropy_loss(Y_batch, outputs)
 
         return loss
 
@@ -107,12 +125,20 @@ if __name__ == "__main__":
         neurons_per_layer,
         use_improved_sigmoid,
         use_improved_weight_init)
+
+    # Initialize weights to uniform random in range [-1, 1] (task 2c)
+    for i in range(len(model.ws)):
+        w_shape = model.ws[i].shape
+        model.ws[i] = np.random.uniform(low=-1.0, high=1.0, size=w_shape)
+            
+
     trainer = SoftmaxTrainer(
         momentum_gamma, use_momentum,
         model, learning_rate, batch_size, shuffle_data,
         X_train, Y_train, X_val, Y_val,
     )
     train_history, val_history = trainer.train(num_epochs)
+    
 
     print("Final Train Cross Entropy Loss:",
           cross_entropy_loss(Y_train, model.forward(X_train)))
