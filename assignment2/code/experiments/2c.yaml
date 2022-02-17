@@ -1,0 +1,4 @@
+settings:
+  use_uniform_improved_weight_init: True
+  use_improved_weight_init: True
+  

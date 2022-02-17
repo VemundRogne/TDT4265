@@ -49,7 +49,8 @@ class SoftmaxModel:
                  # Number of neurons per layer
                  neurons_per_layer: typing.List[int],
                  use_improved_sigmoid: bool,  # Task 3a hyperparameter
-                 use_improved_weight_init: bool  # Task 3c hyperparameter
+                 use_improved_weight_init: bool,  # Task 3c hyperparameter,
+                 use_uniform_improved_weight_init: bool = False
                  ):
         # Always reset random seed before weight init to get comparable results.
         np.random.seed(1)
@@ -75,13 +76,15 @@ class SoftmaxModel:
             print("Initializing weight to shape:", w_shape)
             
             if use_improved_weight_init:
-                # Initialize weights to uniform random in range [-1, 1] (task 2c)
-                w = np.random.uniform(low=-1.0, high=1.0, size=w_shape)
+                if use_uniform_improved_weight_init:
+                    # Initialize weights to uniform random in range [-1, 1] (task 2c)
+                    w = np.random.uniform(low=-1.0, high=1.0, size=w_shape)
 
-                # Task 3a: Initialize using fan-in
-                fan_in = size
-                std = 1 / np.sqrt(fan_in) # Standard 
-                w = np.random.normal(loc=0.0, scale=std, size=w_shape) 
+                else:
+                    # Task 3a: Initialize using fan-in
+                    fan_in = size
+                    std = 1 / np.sqrt(fan_in) # Standard 
+                    w = np.random.normal(loc=0.0, scale=std, size=w_shape) 
             else:
                 # Initialize weights to zeroes
                 w = np.zeros(w_shape)

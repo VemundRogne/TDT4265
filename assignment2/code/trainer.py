@@ -52,7 +52,8 @@ class BaseTrainer:
 
     def train(
             self,
-            num_epochs: int):
+            num_epochs: int,
+            use_early_stop = True):
         """
         Training loop for model.
         Implements stochastic gradient descent with num_epochs passes over the train dataset.

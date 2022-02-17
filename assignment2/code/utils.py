@@ -109,3 +109,36 @@ def plot_loss(loss_dict: dict, label: str = None, npoints_to_average=1, plot_var
         steps, np.array(mean_loss) -
         np.array(loss_std), np.array(mean_loss) + loss_std,
         alpha=.2, label=f"{label} variance over {npoints_to_average} steps")
+
+
+
+def plot_loss_ax(ax, loss_dict: dict, label: str = None, npoints_to_average=1, plot_variance=True):
+    """
+    Args:
+        loss_dict: a dictionary where keys are the global step and values are the given loss / accuracy
+        label: a string to use as label in plot legend
+        npoints_to_average: Number of points to average plot
+    """
+    global_steps = list(loss_dict.keys())
+    loss = list(loss_dict.values())
+    if npoints_to_average == 1 or not plot_variance:
+        ax.plot(global_steps, loss, label=label)
+        return
+
+    npoints_to_average = 10
+    num_points = len(loss) // npoints_to_average
+    mean_loss = []
+    loss_std = []
+    steps = []
+    for i in range(num_points):
+        points = loss[i*npoints_to_average:(i+1)*npoints_to_average]
+        step = global_steps[i*npoints_to_average + npoints_to_average//2]
+        mean_loss.append(np.mean(points))
+        loss_std.append(np.std(points))
+        steps.append(step)
+    ax.plot(steps, mean_loss,
+             label=f"{label}")# (mean over {npoints_to_average} steps)")
+    ax.fill_between(
+        steps, np.array(mean_loss) -
+        np.array(loss_std), np.array(mean_loss) + loss_std,
+        alpha=.2)#, label=f"{label}")# variance over {npoints_to_average} steps")

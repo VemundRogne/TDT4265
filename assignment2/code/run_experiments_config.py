@@ -12,6 +12,7 @@ _C.hyperparameters.momentum_gamma = 0.9
 _C.settings = CN()
 _C.settings.shuffle_data = True
 _C.settings.use_improved_weight_init = False
+_C.settings.use_uniform_improved_weight_init = False
 _C.settings.use_improved_sigmoid = False
 _C.settings.use_momentum = False
 

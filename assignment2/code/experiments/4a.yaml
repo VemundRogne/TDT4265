@@ -1,5 +1,6 @@
 hyperparameters:
   neurons_per_layer: [32, 10]
+  learning_rate: 0.02
 
 settings:
   use_improved_weight_init: True

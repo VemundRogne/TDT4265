@@ -1,5 +1,7 @@
 hyperparameters:
   neurons_per_layer: [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 10]
+  batch_size: 32
+  learning_rate: 0.02
 
 settings:
   use_improved_weight_init: True
