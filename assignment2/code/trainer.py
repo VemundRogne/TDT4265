@@ -104,7 +104,7 @@ class BaseTrainer:
                         else:
                             # Val loss has not improved since last time
                             n_without_val_loss_improvement += 1
-                            if n_without_val_loss_improvement >= 10:
+                            if n_without_val_loss_improvement >= 50:
                                 # Early stop condition fulfilled
                                 print(
                                     f"Early stop triggered during epoch {epoch}")

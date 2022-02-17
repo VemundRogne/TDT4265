@@ -11,9 +11,15 @@ if __name__ == "__main__":
     assert Y[0, 3] == 1 and Y.sum() == 1, \
         f"Expected the vector to be [0,0,0,1,0,0,0,0,0,0], but got {Y}"
 
-    X_train, Y_train, *_ = utils.load_full_mnist()
-    X_train = pre_process_images(X_train)
+    X_train, Y_train, X_val, Y_val = utils.load_full_mnist()
+    # Calc mean and std
+    mean, std = utils.calc_mean_std(X_train) # Only looking at training set when calculating mean, std
+
+    # Load dataset
+    X_train = pre_process_images(X_train, mean=mean, std=std)
+    X_val = pre_process_images(X_val, mean=mean, std=std)
     Y_train = one_hot_encode(Y_train, 10)
+    Y_val = one_hot_encode(Y_val, 10)
     assert X_train.shape[1] == 785,\
         f"Expected X_train to have 785 elements per image. Shape was: {X_train.shape}"
 

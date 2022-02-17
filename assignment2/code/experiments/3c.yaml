@@ -1,0 +1,4 @@
+settings:
+  use_improved_weight_init: True
+  use_improved_sigmoid: True
+  use_momentum: True

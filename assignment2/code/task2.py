@@ -34,6 +34,7 @@ class SoftmaxTrainer(BaseTrainer):
         self.use_momentum = use_momentum
         # Init a history of previous gradients to use for implementing momentum
         self.previous_grads = [np.zeros_like(w) for w in self.model.ws]
+        self.momentum = [np.zeros_like(w) for w in self.model.ws]
 
     def train_step(self, X_batch: np.ndarray, Y_batch: np.ndarray):
         """
@@ -49,11 +50,16 @@ class SoftmaxTrainer(BaseTrainer):
         """
         outputs = self.model.forward(X_batch)
 
-        # Calculate gradient
-        if self.use_momentum:
-            # Save previous grads so we may use it to calculate momentum
-            for i, grad in enumerate(self.model.grads):
-                self.previous_grads[i] = grad.copy()
+        # # Calculate gradient
+        # if self.use_momentum:
+        #     # Save previous grads so we may use it to calculate momentum
+        #     for i, grad in enumerate(self.model.grads):
+        #         if grad is None:
+        #             # Skip copying the gradients the first training step
+        #             print("grad is none! skipping saving previous grads. This should only be printed",
+        #             "once per trained model.")
+        #             break
+        #         self.previous_grads[i] = grad.copy()
 
         self.model.zero_grad()  # reset gradient (but not hidden layer outputs)
         self.model.backward(X_batch, outputs, Y_batch)
@@ -61,8 +67,13 @@ class SoftmaxTrainer(BaseTrainer):
         # Take gradient descent step in each network layer
         for i in range(len(self.model.ws)):
             if self.use_momentum:
-                momentum = self.momentum_gamma * self.previous_grads[i]
-                self.model.ws[i] -= self.learning_rate * (self.model.grads[i] - momentum)
+                # if self.previous_grads[i] is None:
+                #     # first iteration
+                #     self.previous_grads[i] = self.model.grads[i]
+                
+                grad_with_momentum = self.model.grads[i] + self.momentum_gamma * self.previous_grads[i]
+                self.model.ws[i] -= self.learning_rate * grad_with_momentum
+                self.previous_grads[i] = grad_with_momentum
             else:
                 # Don't use momentum
                 self.model.ws[i] -= self.learning_rate * self.model.grads[i]
