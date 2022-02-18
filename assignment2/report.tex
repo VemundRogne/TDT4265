@@ -3,6 +3,9 @@
 \usepackage[numbered, framed]{matlab-prettifier}
 \usepackage{pdfpages}
 \usepackage{parskip}
+\usepackage{amsmath}
+\usepackage{MnSymbol}
+\usepackage{wasysym}
 
 \lstset{
   style              = Matlab-editor,
@@ -13,6 +16,41 @@
 
 
 \begin{document}
+\section*{1a}
+For the weights of the hidden layer, we have that the gradient descent rule with learning rate $\alpha$ is 
+$$
+w_{ji} := w_{ji} - \alpha \frac{\partial C}{\partial w_{ji}}
+$$
+Now, we want to show that this may be rewritten in terms of other variables. Firstly, we make some definitions. Let $\delta_k = \frac{\partial C}{\partial z_k} = -(y_k - \hat{y_k})$, where k denotes an index in the output layer. We try to rewrite the gradient. The last equality is known from the previous assignment. 
+
+Since the loss $C$ is affected by every neuron in the output layer, we sum over the contributions:
+$$
+\frac{\partial C}{\partial w_{ji}} = \sum_{k=1}^K \frac{\partial C}{\partial z_k} \frac{\partial z_k}{\partial w_{ji}}
+$$
+We expand the last term. Since $z_k$ only affected by $w_{ji}$ through node $j$ in the hidden layer, we have that:
+
+$$
+\begin{aligned}
+	\frac{\partial C}{\partial w_{ji}} &= \sum_{k=1}^K \frac{\partial C}{\partial z_k} \frac{\partial z_k}{\partial a_j} \frac{\partial a_j}{\partial z_j} \frac{\partial z_j}{\partial w_{ji}}
+\end{aligned}
+$$
+We recognize that $\frac{\partial C}{\partial z_k} = \delta_k$, $\frac{\partial z_k}{\partial a_j} = w_{kj}$ (the weight of the activation in the hidden layer node j towards the input of node k in the output layer), $\frac{\partial a_j}{\partial z_j} = f'(z_j)$ and that $\frac{\partial z_j}{\partial w_{ji}} = x_i$ . 
+Thus:
+$$
+\begin{aligned}
+	\frac{\partial C}{\partial w_{ji}} &= \sum_{k=1}^K \delta_k w_{kj} f'(z_j) x_i \\
+	&= (f'(z_j) \sum_{k=1}^K \delta_k w_{kj} )x_i
+\end{aligned}
+$$
+
+Defining $\delta_j = f'(z_j)\sum_{k=1}^K \delta_k w_{kj}$, we have that: 
+$$
+\begin{aligned}
+	\frac{\partial C}{\partial w_{ji}} &= \delta_j x_i \\
+	\implies w_{ji} :&= w_{ji} - \alpha \delta_j x_i \quad \blacksquare
+\end{aligned}
+$$
+
 \section*{Task2}
 We trained the network with one hidden layer of 64 neurons, with random initialization of weights.
 \includegraphics[width=\linewidth]{code/experiments/2c.png}
