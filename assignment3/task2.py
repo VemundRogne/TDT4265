@@ -29,7 +29,33 @@ class ExampleModel(nn.Module):
                 kernel_size=5,
                 stride=1,
                 padding=2
-            )
+            ),
+            nn.ReLU(),
+            nn.MaxPool2d(
+                kernel_size=2,
+                stride=2),
+            nn.Conv2d(  # TODO
+                in_channels=num_filters,
+                out_channels=64,
+                kernel_size=5,
+                stride=1,
+                padding=2
+            ),
+            nn.ReLU(),
+            nn.MaxPool2d(
+                kernel_size=2,
+                stride=2),
+            nn.Conv2d(  # TODO
+                in_channels=64,
+                out_channels=128,
+                kernel_size=5,
+                stride=1,
+                padding=2
+            ),
+            nn.ReLU(),
+            nn.MaxPool2d(
+                kernel_size=2,
+                stride=2)
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
         self.num_output_features = 32*32*32
@@ -64,12 +90,15 @@ def create_plots(trainer: Trainer, name: str):
     plt.figure(figsize=(20, 8))
     plt.subplot(1, 2, 1)
     plt.title("Cross Entropy Loss")
-    utils.plot_loss(trainer.train_history["loss"], label="Training loss", npoints_to_average=10)
-    utils.plot_loss(trainer.validation_history["loss"], label="Validation loss")
+    utils.plot_loss(
+        trainer.train_history["loss"], label="Training loss", npoints_to_average=10)
+    utils.plot_loss(
+        trainer.validation_history["loss"], label="Validation loss")
     plt.legend()
     plt.subplot(1, 2, 2)
     plt.title("Accuracy")
-    utils.plot_loss(trainer.validation_history["accuracy"], label="Validation Accuracy")
+    utils.plot_loss(
+        trainer.validation_history["accuracy"], label="Validation Accuracy")
     plt.legend()
     plt.savefig(plot_path.joinpath(f"{name}_plot.png"))
     plt.show()
@@ -77,7 +106,7 @@ def create_plots(trainer: Trainer, name: str):
 
 def main():
     # Set the random generator seed (parameters, shuffling etc).
-    # You can try to change this and check if you still get the same result! 
+    # You can try to change this and check if you still get the same result!
     utils.set_seed(0)
     epochs = 10
     batch_size = 64
@@ -95,6 +124,7 @@ def main():
     )
     trainer.train()
     create_plots(trainer, "task2")
+
 
 if __name__ == "__main__":
     main()
