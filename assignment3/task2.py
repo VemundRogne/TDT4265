@@ -19,7 +19,7 @@ class ExampleModel(nn.Module):
                 image_channels. Number of color channels in image (3)
                 num_classes: Number of classes we want to predict (10)
         """
-        super().__init__()
+        super(ExampleModel, self).__init__()
         # TODO: Implement this function (Task  2a)
         num_filters = 32  # Set number of filters in first conv layer
         self.num_classes = num_classes
@@ -67,7 +67,7 @@ class ExampleModel(nn.Module):
         # There is no need for softmax activation function, as this is
         # included with nn.CrossEntropyLoss
         self.classifier = nn.Sequential(
-            nn.Flatten(),  # Don't flatten the batch size
+            nn.Flatten(),
             nn.Linear(self.num_output_features, 64),
             nn.ReLU(),
             nn.Linear(64, num_classes),
@@ -125,9 +125,9 @@ def main():
     # Set the random generator seed (parameters, shuffling etc).
     # You can try to change this and check if you still get the same result!
     utils.set_seed(0)
-    epochs = 10
+    epochs = 100
     batch_size = 64
-    learning_rate = 5e-2
+    learning_rate = 5e-3
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
     model = ExampleModel(image_channels=3, num_classes=10)
