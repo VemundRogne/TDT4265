@@ -1,6 +1,8 @@
 import pathlib
 import matplotlib.pyplot as plt
 import utils
+
+import torch
 from torch import nn
 from dataloaders import load_cifar10
 from trainer import Trainer
@@ -58,15 +60,17 @@ class ExampleModel(nn.Module):
                 stride=2)
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 32*32*32
+        self.num_output_features = 128 * 4 * 4
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
         # There is no need for softmax activation function, as this is
         # included with nn.CrossEntropyLoss
         self.classifier = nn.Sequential(
+            nn.Flatten(),  # Don't flatten the batch size
             nn.Linear(self.num_output_features, 64),
-            nn.Linear(64, num_classes)
+            nn.ReLU(),
+            nn.Linear(64, num_classes),
         )
 
     def forward(self, x):
@@ -76,11 +80,19 @@ class ExampleModel(nn.Module):
             x: Input image, shape: [batch_size, 3, 32, 32]
         """
         features = self.feature_extractor(x)
+
+        # print(f"{features.shape = }")
+        
+        # with torch.no_grad():
+        #     flatten = nn.Flatten(start_dim=1)  # Don't flatten the batch size
+            
+        #     print(f"{features.shape = }")
+        #     print(f"{flatten(features).shape = }")
+
         classes = self.classifier(features)
 
         # TODO: Implement this function (Task  2a)
         batch_size = x.shape[0]
-        print(batch_size)
         out = classes
         expected_shape = (batch_size, self.num_classes)
         assert out.shape == (batch_size, self.num_classes),\
