@@ -5,6 +5,7 @@ import collections
 import utils
 import pathlib
 
+from torch.utils.data import DataLoader
 
 def compute_loss_and_accuracy(
         dataloader: torch.utils.data.DataLoader,
@@ -23,8 +24,9 @@ def compute_loss_and_accuracy(
     total_loss = 0
     n_correct = 0
 
-    average_loss = 0
-    accuracy = 0
+    batch_size = len(dataloader.dataset)
+    # average_loss = 0
+    # accuracy = 0
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -34,9 +36,21 @@ def compute_loss_and_accuracy(
             # Forward pass the images through our model
             output_probs = model(X_batch)
 
+            pred = output_probs.argmax(dim=1)
+            n_correct += (Y_batch == pred).sum().item()
+            # n_correct += 1 # TODO
             # Compute Loss and Accuracy
             total_loss += loss_criterion(output_probs, Y_batch)
-            n_correct += 0 # TODO
+
+    print(f"{batch_size = }")
+    print(f"{total_loss = }")
+    print(f"{n_correct = }")
+
+    average_loss = total_loss / batch_size
+    accuracy = n_correct / batch_size
+
+    print(f"{average_loss = }")
+    print(f"{accuracy = }")
 
     return average_loss, accuracy
 
