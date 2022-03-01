@@ -65,7 +65,8 @@ class ExampleModel(nn.Module):
         # There is no need for softmax activation function, as this is
         # included with nn.CrossEntropyLoss
         self.classifier = nn.Sequential(
-            nn.Linear(self.num_output_features, num_classes),
+            nn.Linear(self.num_output_features, 64),
+            nn.Linear(64, num_classes)
         )
 
     def forward(self, x):
@@ -74,9 +75,13 @@ class ExampleModel(nn.Module):
         Args:
             x: Input image, shape: [batch_size, 3, 32, 32]
         """
+        features = self.feature_extractor(x)
+        classes = self.classifier(features)
+
         # TODO: Implement this function (Task  2a)
         batch_size = x.shape[0]
-        out = x
+        print(batch_size)
+        out = classes
         expected_shape = (batch_size, self.num_classes)
         assert out.shape == (batch_size, self.num_classes),\
             f"Expected output of forward pass to be: {expected_shape}, but got: {out.shape}"
@@ -108,7 +113,7 @@ def main():
     # Set the random generator seed (parameters, shuffling etc).
     # You can try to change this and check if you still get the same result!
     utils.set_seed(0)
-    epochs = 10
+    epochs = 1
     batch_size = 64
     learning_rate = 5e-2
     early_stop_count = 4
