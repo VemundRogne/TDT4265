@@ -38,7 +38,7 @@ def compute_loss_and_accuracy(
             pred = output_probs.argmax(dim=1)
             # Compute Loss and Accuracy
             total_loss += loss_criterion(output_probs, Y_batch)
-            n_correct += (Y_batch == pred).sum().item()
+            n_correct += (Y_batch == pred).type(torch.float).sum().item()
 
             n_batches += 1
             n_images += Y_batch.shape[0]
@@ -82,10 +82,11 @@ class Trainer:
         print(self.model)
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
-                                         self.learning_rate,
-                                        #  momentum=0.9
-                                         )
+        #self.optimizer = torch.optim.SGD(self.model.parameters(),
+                                         #self.learning_rate,
+                                         #momentum=0.9
+                                         #)
+        self.optimizer = torch.optim.Adam(self.model.parameters())
 
         # Load our dataset
         self.dataloader_train, self.dataloader_val, self.dataloader_test = dataloaders
