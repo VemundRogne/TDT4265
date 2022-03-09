@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from tools import read_predicted_boxes, read_ground_truth_boxes
 
 
-
 def calculate_iou(prediction_box, gt_box):
     """Calculate intersection over union of single predicted and ground truth box.
 
@@ -39,13 +38,13 @@ def calculate_iou(prediction_box, gt_box):
         # No intersection
         intersection = 0
 
-
     # Compute union
+
     def _box_area(box):
         return (box[2] - box[0]) * (box[3] - box[1])
 
     union = _box_area(prediction_box) + _box_area(gt_box) - intersection
-    iou = intersection / union # Intersection over Union
+    iou = intersection / union  # Intersection over Union
     assert iou >= 0 and iou <= 1
     return iou
 
@@ -101,11 +100,49 @@ def get_all_box_matches(prediction_boxes, gt_boxes, iou_threshold):
     """
     # Find all possible matches with a IoU >= iou threshold
 
+    matches = []
+
+    for i_pred, pred_box in enumerate(prediction_boxes):
+        for i_gt, gt_box in enumerate(gt_boxes):
+            iou = calculate_iou(prediction_box=pred_box,
+                                gt_box=gt_box)
+            if iou > iou_threshold:
+                matches.append((i_pred, i_gt, iou))
+
     # Sort all matches on IoU in descending order
+    sorted_matches = sorted(matches, key=lambda tup: tup[2], reverse=True)
+
+    # Filter out too low
+
+    # Keep track of the indices already used
+    used_pred_indices = set()
+    used_gt_indices = set()
+
+    match_pred_indices = []
+    match_gt_indices = []
 
     # Find all matches with the highest IoU threshold
+    # Use greedy approach, but keep track of boxes already in matches
+    for match in sorted_matches:
+        i_pred, i_gt, iou = match
+        if i_pred in used_pred_indices or i_gt in used_gt_indices:
+            # Match cannot be in multiple pairs!
+            continue
 
-    return np.array([]), np.array([])
+        # Keep track of used indices
+        used_pred_indices.add(i_pred)
+        used_gt_indices.add(i_gt)
+
+        match_pred_indices.append(i_pred)
+        match_gt_indices.append(i_gt)
+
+    prediction_box_matches = np.take(
+        a=prediction_boxes, indices=match_pred_indices, axis=0)
+    gt_box_matches = np.take(a=gt_boxes, indices=match_gt_indices, axis=0)
+
+    assert prediction_box_matches.shape == gt_box_matches.shape, "Prediction and gt boxes different shapes!"
+
+    return prediction_box_matches, gt_box_matches
 
 
 def calculate_individual_image_result(prediction_boxes, gt_boxes, iou_threshold):
@@ -126,7 +163,23 @@ def calculate_individual_image_result(prediction_boxes, gt_boxes, iou_threshold)
             {"true_pos": int, "false_pos": int, false_neg": int}
     """
 
-    raise NotImplementedError
+
+    pred_box_matches, gt_box_matches = get_all_box_matches(
+        prediction_boxes=prediction_boxes,
+        gt_boxes=gt_boxes,
+        iou_threshold=iou_threshold)
+
+    # True positive: A pred matched to gt
+    true_pos = pred_box_matches.shape[0]
+
+    # False positive: A pred not matched to a gt
+    false_pos = prediction_boxes.shape[0] - pred_box_matches.shape[0]
+
+    # False negative: A gt not matched to a pred
+    false_neg = gt_boxes.shape[0] - gt_box_matches.shape[0]
+
+    result = {"true_pos": true_pos, "false_pos": false_pos, "false_neg": false_neg}
+    return result
 
 
 def calculate_precision_recall_all_images(
@@ -148,7 +201,17 @@ def calculate_precision_recall_all_images(
     Returns:
         tuple: (precision, recall). Both float.
     """
-    raise NotImplementedError
+    results = []
+
+    for pred_boxes, gt_boxes in zip (all_prediction_boxes, all_gt_boxes):
+        result = calculate_individual_image_result(
+            prediction_boxes=pred_boxes,
+            gt_boxes=gt_boxes,
+            iou_threshold=iou_threshold
+        )
+        results.append(result)
+
+
 
 
 def get_precision_recall_curve(
