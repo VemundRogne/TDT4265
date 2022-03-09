@@ -1,0 +1,2 @@
+settings:
+  use_improved_weight_init: True
