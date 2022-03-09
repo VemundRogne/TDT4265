@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from tools import read_predicted_boxes, read_ground_truth_boxes
 
 
+def _box_area(box):
+    return (box[2] - box[0]) * (box[3] - box[1])
+
+
 def calculate_iou(prediction_box, gt_box):
     """Calculate intersection over union of single predicted and ground truth box.
 
@@ -18,9 +22,31 @@ def calculate_iou(prediction_box, gt_box):
     # YOUR CODE HERE
 
     # Compute intersection
+    # Boxes intersect if they do not fulfill the conditions where they _don't_ intersect
+    do_boxes_intersect = not (prediction_box[0] > gt_box[2]
+                              or prediction_box[2] < gt_box[0]
+                              or prediction_box[1] > gt_box[3]
+                              or prediction_box[3] < gt_box[1])
+
+    if do_boxes_intersect:
+        top_left_corner = np.max(
+            np.array([prediction_box, gt_box]), axis=0)[:2]
+        bottom_right_corner = np.min(
+            np.array([prediction_box, gt_box]), axis=0)[2:]
+
+        diff = bottom_right_corner - top_left_corner
+
+        intersection = diff[0] * diff[1]  # Area of intersection
+        assert intersection > 0, f"Intersection {intersection:0.2f} is negative!"
+    else:
+        # No intersection
+        intersection = 0
+
 
     # Compute union
-    iou = 0
+
+    union = _box_area(prediction_box) + _box_area(gt_box) - intersection
+    iou = intersection / union
     assert iou >= 0 and iou <= 1
     return iou
 
@@ -74,12 +100,9 @@ def get_all_box_matches(prediction_boxes, gt_boxes, iou_threshold):
     """
     # Find all possible matches with a IoU >= iou threshold
 
-
     # Sort all matches on IoU in descending order
 
     # Find all matches with the highest IoU threshold
-
-
 
     return np.array([]), np.array([])
 
@@ -106,7 +129,7 @@ def calculate_individual_image_result(prediction_boxes, gt_boxes, iou_threshold)
 
 
 def calculate_precision_recall_all_images(
-    all_prediction_boxes, all_gt_boxes, iou_threshold):
+        all_prediction_boxes, all_gt_boxes, iou_threshold):
     """Given a set of prediction boxes and ground truth boxes for all images,
        calculates recall and precision over all images
        for a single image.
@@ -158,7 +181,7 @@ def get_precision_recall_curve(
     confidence_thresholds = np.linspace(0, 1, 500)
     # YOUR CODE HERE
 
-    precisions = [] 
+    precisions = []
     recalls = []
     return np.array(precisions), np.array(recalls)
 
@@ -233,7 +256,8 @@ def mean_average_precision(ground_truth_boxes, predicted_boxes):
     precisions, recalls = get_precision_recall_curve(
         all_prediction_boxes, all_gt_boxes, confidence_scores, 0.5)
     plot_precision_recall_curve(precisions, recalls)
-    mean_average_precision = calculate_mean_average_precision(precisions, recalls)
+    mean_average_precision = calculate_mean_average_precision(
+        precisions, recalls)
     print("Mean average precision: {:.4f}".format(mean_average_precision))
 
 
