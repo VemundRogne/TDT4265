@@ -3,9 +3,6 @@ import matplotlib.pyplot as plt
 from tools import read_predicted_boxes, read_ground_truth_boxes
 
 
-def _box_area(box):
-    return (box[2] - box[0]) * (box[3] - box[1])
-
 
 def calculate_iou(prediction_box, gt_box):
     """Calculate intersection over union of single predicted and ground truth box.
@@ -44,9 +41,11 @@ def calculate_iou(prediction_box, gt_box):
 
 
     # Compute union
+    def _box_area(box):
+        return (box[2] - box[0]) * (box[3] - box[1])
 
     union = _box_area(prediction_box) + _box_area(gt_box) - intersection
-    iou = intersection / union
+    iou = intersection / union # Intersection over Union
     assert iou >= 0 and iou <= 1
     return iou
 
@@ -62,7 +61,8 @@ def calculate_precision(num_tp, num_fp, num_fn):
     Returns:
         float: value of precision
     """
-    raise NotImplementedError
+    precision = num_tp / (num_tp + num_fp)
+    return precision
 
 
 def calculate_recall(num_tp, num_fp, num_fn):
@@ -75,7 +75,8 @@ def calculate_recall(num_tp, num_fp, num_fn):
     Returns:
         float: value of recall
     """
-    raise NotImplementedError
+    recall = num_tp / (num_tp + num_fn)
+    return recall
 
 
 def get_all_box_matches(prediction_boxes, gt_boxes, iou_threshold):
