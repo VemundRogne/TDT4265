@@ -69,9 +69,9 @@ class BasicModel(torch.nn.Module):
         )
         self.conv_layer6 = nn.Sequential(
             nn.ReLU(),
-            nn.Conv2d(in_channels=self.out_channels[5], out_channels=self.out_channels[5], stride=1, padding=1, kernel_size=3),
+            nn.Conv2d(in_channels=self.out_channels[5], out_channels=128, stride=1, padding=1, kernel_size=3),
             nn.ReLU(),
-            nn.Conv2d(in_channels=self.out_channels[5], out_channels=self.out_channels[5], stride=1, padding=0, kernel_size=3),
+            nn.Conv2d(in_channels=128, out_channels=self.out_channels[5], stride=1, padding=0, kernel_size=3),
             nn.ReLU(),
         )
 
