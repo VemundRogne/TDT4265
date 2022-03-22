@@ -107,7 +107,6 @@ def train(config_path: Path, evaluate_only: bool):
         end_epoch_time = time.time() - start_epoch_time
         total_time += end_epoch_time
         logger.add_scalar("stats/epoch_time", end_epoch_time)
-
         eval_stats = evaluation_fn()
         eval_stats = {f"metrics/{key}": val for key, val in eval_stats.items()}
         logger.add_dict(eval_stats, level=logger.logger.INFO)

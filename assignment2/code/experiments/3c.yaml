@@ -1,0 +1,7 @@
+settings:
+  use_improved_weight_init: True
+  use_improved_sigmoid: True
+  use_momentum: True
+
+hyperparameters:
+  learning_rate: 0.02

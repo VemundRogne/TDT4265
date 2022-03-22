@@ -5,6 +5,7 @@ import collections
 import utils
 import pathlib
 
+from torch.utils.data import DataLoader
 
 def compute_loss_and_accuracy(
         dataloader: torch.utils.data.DataLoader,
@@ -20,8 +21,11 @@ def compute_loss_and_accuracy(
     Returns:
         [average_loss, accuracy]: both scalar.
     """
-    average_loss = 0
-    accuracy = 0
+    total_loss = 0
+    n_correct = 0
+    n_batches = 0
+    n_images = 0
+
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -31,7 +35,23 @@ def compute_loss_and_accuracy(
             # Forward pass the images through our model
             output_probs = model(X_batch)
 
+            pred = output_probs.argmax(dim=1)
             # Compute Loss and Accuracy
+            total_loss += loss_criterion(output_probs, Y_batch)
+            n_correct += (Y_batch == pred).type(torch.float).sum().item()
+
+            n_batches += 1
+            n_images += Y_batch.shape[0]
+
+    # print(f"{n_images = }")
+    # print(f"{total_loss = }")
+    # print(f"{n_correct = }")
+
+    average_loss = total_loss / n_batches
+    accuracy = n_correct / n_images
+
+    # print(f"{average_loss = }")
+    # print(f"{accuracy = }")
 
     return average_loss, accuracy
 
@@ -62,8 +82,11 @@ class Trainer:
         print(self.model)
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
-                                         self.learning_rate)
+        #self.optimizer = torch.optim.SGD(self.model.parameters(),
+                                         #self.learning_rate,
+                                         #momentum=0.9
+                                         #)
+        self.optimizer = torch.optim.Adam(self.model.parameters())
 
         # Load our dataset
         self.dataloader_train, self.dataloader_val, self.dataloader_test = dataloaders
@@ -134,6 +157,7 @@ class Trainer:
         Returns:
             loss value (float) on batch
         """
+        
         # X_batch is the CIFAR10 images. Shape: [batch_size, 3, 32, 32]
         # Y_batch is the CIFAR10 image label. Shape: [batch_size]
         # Transfer images / labels to GPU VRAM, if possible
@@ -144,6 +168,7 @@ class Trainer:
         predictions = self.model(X_batch)
         # Compute the cross entropy loss for the batch
         loss = self.loss_criterion(predictions, Y_batch)
+        
         # Backpropagation
         loss.backward()
         # Gradient descent step

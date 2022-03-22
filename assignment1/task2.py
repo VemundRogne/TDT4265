@@ -5,6 +5,8 @@ from task2a import cross_entropy_loss, BinaryModel, pre_process_images
 from trainer import BaseTrainer
 np.random.seed(0)
 
+FIGURE_DIRECTORY = "figures/"
+
 
 def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -> float:
     """
@@ -16,7 +18,9 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -
         Accuracy (float)
     """
     # TODO Implement this function (Task 2c)
-    accuracy = 0.0
+    outputs = model.forward(X)
+    y_pred = np.round(outputs)  # 1.0 if over 0.5, else 0.0
+    accuracy = np.mean(1 - np.abs(y_pred - targets))
     return accuracy
 
 
@@ -35,7 +39,17 @@ class LogisticTrainer(BaseTrainer):
             loss value (float) on batch
         """
         # TODO: Implement this function (task 2b)
-        loss = 0
+        outputs = self.model.forward(X_batch)
+
+        # Calculate gradient
+        self.model.zero_grad()  # reset gradient
+        self.model.backward(X_batch, outputs, Y_batch)
+
+        # Take gradient descent step
+        self.model.w -= self.learning_rate * self.model.grad  # or += ?
+
+        # Calculate loss
+        loss = cross_entropy_loss(Y_batch, outputs)
         return loss
 
     def validation_step(self):
@@ -76,6 +90,10 @@ if __name__ == "__main__":
     X_train = pre_process_images(X_train)
     X_val = pre_process_images(X_val)
 
+    Y_train_copy = Y_train.copy()
+
+    print("y train copy", Y_train_copy[:10])
+
     # ANY PARTS OF THE CODE BELOW THIS CAN BE CHANGED.
 
     # Intialize model
@@ -104,7 +122,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
-    plt.savefig("task2b_binary_train_loss.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2b_binary_train_loss.png")
     plt.show()
 
     # Plot accuracy
@@ -114,7 +132,7 @@ if __name__ == "__main__":
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig("task2b_binary_train_accuracy.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2b_binary_train_accuracy.png")
     plt.show()
 
     # Task 2e - Create a comparison between training with and without shuffling
@@ -128,7 +146,10 @@ if __name__ == "__main__":
     )
     train_history_shuffle, val_history_shuffle = trainer.train(num_epochs)
 
-    plt.ylim([0., .2])
+    print("train_history loss len", len(train_history["loss"]))
+    print("train shuffle loss len", len(train_history_shuffle["loss"]))
+
+    # plt.ylim([0., .2])
     utils.plot_loss(train_history["loss"],
                     "Training Loss", npoints_to_average=10)
     utils.plot_loss(
@@ -136,15 +157,16 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
-    plt.savefig("task2e_train_loss_with_shuffle.png")
+    plt.savefig(FIGURE_DIRECTORY + "task2e_train_loss_with_shuffle.png")
     plt.show()
 
-    plt.ylim([0.93, .99])
+    # plt.ylim([0.93, .99])
     utils.plot_loss(val_history["accuracy"], "Validation Accuracy")
     utils.plot_loss(
         val_history_shuffle["accuracy"], "Validation Accuracy with shuffle")
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig("task2e_train_accuracy_shuffle_difference.png")
+    plt.savefig(FIGURE_DIRECTORY +
+                "task2e_train_accuracy_shuffle_difference.png")
     plt.show()

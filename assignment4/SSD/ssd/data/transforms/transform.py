@@ -165,7 +165,6 @@ class RandomHorizontalFlip(torch.nn.Module):
     def __init__(self, p=0.5) -> None:
         super().__init__()
         self.p = p
-
     def __call__(self, sample):
         image = sample["image"]
         if np.random.uniform() < self.p:
