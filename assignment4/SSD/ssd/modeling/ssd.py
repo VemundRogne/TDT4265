@@ -17,7 +17,7 @@ class SSD300(nn.Module):
         """
 
         self.feature_extractor = feature_extractor
-        self.loss_func = loss_objective(anchors=anchors)
+        self.loss_func = loss_objective
         self.num_classes = num_classes
         self.regression_heads = []
         self.classification_heads = []
