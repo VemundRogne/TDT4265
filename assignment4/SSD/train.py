@@ -59,10 +59,14 @@ def print_config(cfg):
     print("--------------------End of config file--------------------")
 
 
+
 @click.command()
 @click.argument("config_path", type=click.Path(exists=True, dir_okay=False, path_type=Path))
 @click.option("--evaluate-only", default=False, is_flag=True, help="Only run evaluation, no training.")
-def train(config_path: Path, evaluate_only: bool):
+def train_args(config_path: Path, evaluate_only: bool):
+    train(config_path, evaluate_only)
+
+def train(config_path, evaluate_only):
     logger.logger.DEFAULT_SCALAR_LEVEL = logger.logger.DEBUG
     cfg = utils.load_config(config_path)
     print_config(cfg)
@@ -117,4 +121,4 @@ def train(config_path: Path, evaluate_only: bool):
 
 
 if __name__ == "__main__":
-    train()
+    train_args()
